@@ -1,34 +1,37 @@
 using System;
 using System.Buffers;
-using System.Collections;
-using System.Threading.Tasks;
 
 namespace SuperSocket.ProtoBase
 {
-    public abstract class TerminatorPipelineFilter<TPackageInfo> : PipelineFilterBase<TPackageInfo>
+    public class TerminatorPipelineFilter<TPackageInfo> : PipelineFilterBase<TPackageInfo>
         where TPackageInfo : class
     {
-        private byte[] _terminator;
+        private readonly ReadOnlyMemory<byte> _terminator;
 
-        public TerminatorPipelineFilter(byte[] terminator)
+        public TerminatorPipelineFilter(ReadOnlyMemory<byte> terminator)
         {
             _terminator = terminator;
         }
         
-        public override TPackageInfo Filter(ref ReadOnlySequence<byte> buffer)
+        public override TPackageInfo Filter(ref SequenceReader<byte> reader)
         {
-            ReadOnlySequence<byte> slice;
-            SequencePosition cursor;
+            var terminator =  _terminator;
+            var terminatorSpan = terminator.Span;
 
-            if (!buffer.TrySliceTo(new Span<byte>(_terminator), out slice, out cursor))
+            if (!reader.TryReadToAny(out ReadOnlySequence<byte> pack, terminatorSpan, advancePastDelimiter: false))
             {
                 return null;
             }
 
-            buffer = buffer.Slice(cursor).Slice(_terminator.Length);
-            return ResolvePackage(slice);
-        }
+            for (var i = 0; i < _terminator.Length - 1; i++)
+            {
+                if (!reader.IsNext(terminatorSpan, advancePast: true))
+                {
+                    return null;
+                }
+            }
 
-        public abstract TPackageInfo ResolvePackage(ReadOnlySequence<byte> buffer);
+            return DecodePackage(pack);
+        }
     }
 }

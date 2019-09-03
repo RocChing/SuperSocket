@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\tools\Common.props" />
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>$(LibTargetFramework)</TargetFramework>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="System.Threading.Tasks" Version="$(CoreFxVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions" Version="$(KestrelVersion)" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(MSExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MSExtensionsVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SuperSocket.ProtoBase/SuperSocket.ProtoBase.csproj" />
