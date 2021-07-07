@@ -1,8 +1,23 @@
 <Project>
   <Import Project="Dependencies.props" />
   <PropertyGroup>
-    <Version>2.0.0-preview1</Version>
-    <LangVersion>7.2</LangVersion>    
-    <LibTargetFramework>netcoreapp3.0</LibTargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
   </PropertyGroup>
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/kerryjiang/supersocket</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSource>true</IncludeSource>
+    <Authors>Kerry Jiang and other contributors</Authors>
+    <Owners>Kerry Jiang</Owners>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup Condition="$(IsPackable) != False AND '$(OutputType)' != 'Exe'">
+    <Compile Include="..\..\InternalsVisibleTo.cs" />
+  </ItemGroup>
 </Project>
