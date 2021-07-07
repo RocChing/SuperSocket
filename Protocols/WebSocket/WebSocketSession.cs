@@ -224,6 +224,11 @@ namespace SuperSocket.WebSocket
 
         string IWebSocketSession.GetAvailableSubProtocol(string protocol)
         {
+            return GetAvailableSubProtocol(protocol);
+        }
+            
+        protected virtual string GetAvailableSubProtocol(string protocol)
+        {
             if (string.IsNullOrEmpty(protocol))
             {
                 SubProtocol = AppServer.DefaultSubProtocol;
@@ -502,8 +507,14 @@ namespace SuperSocket.WebSocket
         {
             if (!InClosing)
                 InClosing = true;
-
-            ProtocolProcessor.SendCloseHandshake(this, statusCode, reasonText);
+            
+            try
+            {
+                ProtocolProcessor.SendCloseHandshake(this, statusCode, reasonText);
+            }
+            catch (TimeoutException)
+            {                
+            }            
 
             StartClosingHandshakeTime = DateTime.Now;
             AppServer.PushToCloseHandshakeQueue(this);
